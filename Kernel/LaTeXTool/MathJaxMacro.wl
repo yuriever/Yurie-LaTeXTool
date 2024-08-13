@@ -68,7 +68,7 @@ extractMacroFromString[excludedMacroList_List][string_String] :=
             "Command"->#Command,
             "Environment"->#Environment,
             "Rest"->DeleteCases[stringRest,""|" "],
-            "Test"->StringRiffle[#Test,{"# MathJax macro\n\nWatched by LaTeX-macro-convert.nb${}$\n\n\\begin{align}\n&","\\\\\n&","\n\\end{align}"}],
+            "Test"->StringRiffle[#Test,{"# MathJax macro\n\nWatched by LaTeX-macro-convert.nb${}$\n\n\\begin{align}\n&","\\\\\n&","\n\\end{align}\n"}],
             "JSON"->ExportString[#Command,"JSON",CharacterEncoding->"ASCII"],
             "CWL"->StringRiffle[#CWL,"\n"]
         |>&]
