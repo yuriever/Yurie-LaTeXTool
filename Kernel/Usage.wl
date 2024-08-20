@@ -1,6 +1,4 @@
-
-
-(*LaTeXFormatter.wl*)
+(* LaTeXFormatter.wl *)
 
 adjustPunctuationSpacingOfEquation::usage =
 	"adjust the spacing of punctuations in equations.";
@@ -12,7 +10,7 @@ deletePercentageAroundEquation::usage =
 	"delete all percentage symbols before and after equations.";
 
 
-(*LaTeXWorkshopCompletion.wl*)
+(* LaTeXWorkshopCompletion.wl *)
 
 convertCWLToJSON::usage =
 	"convert the macros in CWL files into JSON format used by LaTeX-Workshop.";
@@ -21,7 +19,7 @@ addPackageToJSON::usage =
 	"add package information to JSON files used by LaTeX-Workshop";
 
 
-(*MathJaxMacro.wl*)
+(* MathJaxMacro.wl *)
 
 extractMacroFromSTY::usage =
 	"extract the macros in STY files.";
