@@ -40,13 +40,13 @@ Begin["`Private`"];
 (*Constant*)
 
 
-numberOfPercentage::usage =
+$maxNumberOfPercentage::usage =
     "maximal number of percentage symbols to be deleted around equations.";
 
-numberOfPercentage = 6;
+$maxNumberOfPercentage = 6;
 
 
-patternOfEquation = Alternatives@@Map["{"<>#<>"}"&,{"equation","align"}];
+equationP = Alternatives@@Map["{"<>#<>"}"&,{"equation","align"}];
 
 
 (* ::Subsection:: *)
@@ -57,20 +57,20 @@ patternOfEquation = Alternatives@@Map["{"<>#<>"}"&,{"equation","align"}];
 (*Constant*)
 
 
-listOfPunctuation = {",",".",";"};
+$listOfPunctuation = {",",".",";"};
 
-patternOfPunctuation = Alternatives@@listOfPunctuation;
+punctuationP = Alternatives@@$listOfPunctuation;
 
-patternOfSpacing = " "|"\\;"|"\\,"|"\\:"|"\\>"|"\\ ";
+spacingP = " "|"\\;"|"\\,"|"\\:"|"\\>"|"\\ ";
 
-patternOfEndCharacter = EndOfString|"\\end"|"\\\\"|"\\nn"|"\\label"|"\\quad"|"\\qquad";
+equationEndP = EndOfString|"\\end"|"\\\\"|"\\nn"|"\\label"|"\\quad"|"\\qquad";
 
 
 (* ::Subsubsection:: *)
 (*Main*)
 
 
-adjustPunctuationSpacingOfEquation[targetDir_?DirectoryQ,spacing:patternOfSpacing:"\\,",ignoreBefore_List:{}][file_] :=
+adjustPunctuationSpacingOfEquation[targetDir_?DirectoryQ,spacing:spacingP:"\\,",ignoreBefore_List:{}][file_] :=
     adjustPunctuationSpacingInFile[targetDir,spacing,ignoreBefore][file]
 
 
@@ -79,7 +79,7 @@ adjustPunctuationSpacingOfEquation[targetDir_?DirectoryQ,spacing:patternOfSpacin
 
 
 adjustPunctuationSpacingInFile[targetDir_,spacing_,ignoreBefore_][file_] :=
-    file//Import[#,"String"]&//deleteAllPercentageAroundEquationInString[numberOfPercentage]//addPercentageAroundEquationInString//
+    file//Import[#,"String"]&//deleteAllPercentageAroundEquationInString[$maxNumberOfPercentage]//addPercentageAroundEquationInString//
 	    adjustPunctuationSpacingInString[spacing,ignoreBefore]//
 		    moveSpacingToNewline[spacing]//
 				Export[FileNameJoin@{targetDir,FileNameTake[file]},#,"String"]&//File;
@@ -87,7 +87,7 @@ adjustPunctuationSpacingInFile[targetDir_,spacing_,ignoreBefore_][file_] :=
 
 adjustPunctuationSpacingInString[spacing_,ignoreBefore_][str_] :=
     str//StringReplace[{
-        "\\begin"~~env:patternOfEquation~~Shortest[body___]~~"\\end"~~env__:>
+        "\\begin"~~env:equationP~~Shortest[body___]~~"\\end"~~env__:>
             "\\begin"~~env~~adjustPunctuationSpacingInEquation[spacing,ignoreBefore][body]~~"\\end"~~env
     }];
 
@@ -97,16 +97,16 @@ adjustPunctuationSpacingInEquation[spacing_,ignoreBefore_][eq_] :=
         (*default dummy rules.*)
         "\\,"->"\\,","\\;"->"\\;","\\left."->"\\left.","\\right."->"\\right.",
         (*dummy rules.*)
-        Flatten@Outer[StringJoin,ignoreBefore,listOfPunctuation]//Map[#->#&]//Splice,
+        Flatten@Outer[StringJoin,ignoreBefore,$listOfPunctuation]//Map[#->#&]//Splice,
         (*only match the punctuations before the end characters.*)
-        pun:patternOfPunctuation~~spaces:WhitespaceCharacter...~~end:patternOfEndCharacter:>
+        pun:punctuationP~~spaces:WhitespaceCharacter...~~end:equationEndP:>
             spacing~~" "~~pun~~spaces~~end
     }]//deleteDuplicatedSpacing[spacing];
 
 
 deleteDuplicatedSpacing[spacing_][eq_] :=
     eq//StringReplace[{
-        patternOfSpacing~~WhitespaceCharacter...~~spacing~~" "~~pun:patternOfPunctuation~~spaces:WhitespaceCharacter...~~end:patternOfEndCharacter:>
+        spacingP~~WhitespaceCharacter...~~spacing~~" "~~pun:punctuationP~~spaces:WhitespaceCharacter...~~end:equationEndP:>
             spacing~~" "~~pun~~spaces~~end
     }];
 
@@ -121,7 +121,7 @@ moveSpacingToNewlineIgnoringComment[spacing_][eqs_List] :=
 moveSpacingToNewlineIgnoringComment[spacing_][eq_String] :=
     If[ StringCount[eq,"\n"]>=2,
         eq//StringReplace[{
-            StartOfLine~~spaces1:WhitespaceCharacter...~~Shortest[words:Except[{"\n","\t"}]..]~~Longest[spaces2:WhitespaceCharacter...]~~spacing~~" "~~pun:patternOfPunctuation~~Shortest[spaces3:WhitespaceCharacter...]~~end:patternOfEndCharacter:>
+            StartOfLine~~spaces1:WhitespaceCharacter...~~Shortest[words:Except[{"\n","\t"}]..]~~Longest[spaces2:WhitespaceCharacter...]~~spacing~~" "~~pun:punctuationP~~Shortest[spaces3:WhitespaceCharacter...]~~end:equationEndP:>
                 spaces1~~words~~"\n"~~spaces1~~spacing~~" "~~pun~~spaces3~~end
         }],
         (*Else*)
@@ -138,11 +138,11 @@ moveSpacingToNewlineIgnoringComment[spacing_][eq_String] :=
 
 
 addPercentageAroundEquation[targetDir_?DirectoryQ][file_] :=
-    addPercentageAroundEquationInFile[targetDir,numberOfPercentage][file];
+    addPercentageAroundEquationInFile[targetDir,$maxNumberOfPercentage][file];
 
 
 deletePercentageAroundEquation[targetDir_?DirectoryQ][file_] :=
-    deletePercentageAroundEquationInFile[targetDir,numberOfPercentage][file];
+    deletePercentageAroundEquationInFile[targetDir,$maxNumberOfPercentage][file];
 
 
 (* ::Subsubsection:: *)
@@ -161,7 +161,7 @@ deletePercentageAroundEquationInFile[targetDir_][file_] :=
 
 addPercentageAroundEquationInString[str_] :=
     str//StringReplace[{
-        StartOfLine~~Shortest[spaces:WhitespaceCharacter...]~~"\\begin"~~env:patternOfEquation~~Shortest[body___]~~"\\end"~~env__:>
+        StartOfLine~~Shortest[spaces:WhitespaceCharacter...]~~"\\begin"~~env:equationP~~Shortest[body___]~~"\\end"~~env__:>
             spaces~~"% \n"~~spaces~~"\\begin"~~env~~body~~"\\end"~~env~~"\n"~~spaces~~"% "
     }];
 
@@ -173,13 +173,13 @@ deleteAllPercentageAroundEquationInString[limit_][str_] :=
 deletePercentageAroundEquationInString[str_] :=
     str//StringReplace[{
         (*dummy rule to skip the commented equations.*)
-        "% \\begin"~~env:patternOfEquation~~Shortest[body___]~~"\\end"~~env__:>
+        "% \\begin"~~env:equationP~~Shortest[body___]~~"\\end"~~env__:>
             "% \\begin"~~env~~body~~"\\end"~~env,
         (*delete percentage before equations.*)
-        "%"~~spaces1:WhitespaceCharacter...~~"\\begin"~~env:patternOfEquation~~Shortest[body___]~~"\\end"~~env__:>
+        "%"~~spaces1:WhitespaceCharacter...~~"\\begin"~~env:equationP~~Shortest[body___]~~"\\end"~~env__:>
             "\\begin"~~env~~body~~"\\end"~~env,
         (*delete percentage after equations.*)
-        "\\begin"~~env:patternOfEquation~~Shortest[body___]~~"\\end"~~env__~~spaces2:WhitespaceCharacter...~~"%"~~Shortest[spaces3:WhitespaceCharacter...]~~"\n":>
+        "\\begin"~~env:equationP~~Shortest[body___]~~"\\end"~~env__~~spaces2:WhitespaceCharacter...~~"%"~~Shortest[spaces3:WhitespaceCharacter...]~~"\n":>
             "\\begin"~~env~~body~~"\\end"~~env~~"\n"
     }];
 
