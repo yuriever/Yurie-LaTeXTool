@@ -4,7 +4,7 @@
 (*Begin*)
 
 
-BeginPackage["Yurie`LaTeXTool`Parser`"];
+BeginPackage["Yurie`LaTeXTool`Parser2`"];
 
 
 Needs["Yurie`LaTeXTool`"];

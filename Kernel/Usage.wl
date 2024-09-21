@@ -19,7 +19,7 @@ addPackageToJSON::usage =
 	"add package information to JSON files used by LaTeX-Workshop";
 
 
-(* Parser-old.wl *)
+(* Parser2.wl *)
 
 extractMacroFromSTY::usage =
 	"extract the macros in STY files.";

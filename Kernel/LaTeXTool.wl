@@ -15,6 +15,8 @@ Get["Yurie`LaTeXTool`Info`"];
 
 Get["Yurie`LaTeXTool`Parser`"];
 
+Get["Yurie`LaTeXTool`Parser2`"];
+
 Get["Yurie`LaTeXTool`LaTeXWorkshopCompletion`"];
 
 Get["Yurie`LaTeXTool`LaTeXFormatter`"];

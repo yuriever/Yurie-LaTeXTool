@@ -14,7 +14,7 @@
 * `#!wl addPackageToJSON` - add package information to JSON files used by LaTeX-Workshop
 
 
-<!-- Parser-old.wl -->
+<!-- Parser2.wl -->
 
 * `#!wl extractMacroFromSTY` - extract the macros in STY files.
 

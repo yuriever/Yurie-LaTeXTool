@@ -35,9 +35,7 @@ Begin["`Private`"];
 (*Constant*)
 
 
-(* ::Text:: *)
-(*regex for newcommand.nb*)
-
+(*FileNameJoin[$thisPromptDir,"regex for newcommand.nb"]*)
 
 $newcommandP =
     RegularExpression["\\\\newcommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
@@ -45,45 +43,74 @@ $newcommandP =
 $renewcommandP =
     RegularExpression["\\\\renewcommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
 
-$providecommand =
+$providecommandP =
     RegularExpression["\\\\providecommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
 
 
-(* ::Text:: *)
-(*regex for comment.nb*)
+$newenvironmentP =
+	Pass;
 
+
+(*FileNameJoin[$thisPromptDir,"regex for comment.nb"]*)
 
 $commentP =
-    RegularExpression["(?m)%.*$"];
+    RegularExpression["(?m)(%.*)$"];
+
+
+$ignoredLineP =
+	StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXTool: skip"~~EndOfLine;
+
+$ignoredBlockP =
+    StartOfLine~~"% LaTeXTool: off"~~Shortest[___]~~"% LaTeXTool: on"~~EndOfLine;
 
 
 (* ::Subsection:: *)
-(*LaTeXParser*)
-
-
-(* ::Subsubsection:: *)
 (*Main*)
 
 
+Needs["Lacia`Base`"];
+
+ClearAll[LaTeXParser];
+
+
+
 LaTeXParser[file_] :=
-    Module[ {string},
-        string = Import[file,"Text"]//cleanComment;
+    Module[ {string,data,newcommand},
+        string =
+            Import[file,"Text"]//removeIgnoredLine//removeIgnoredBlock//removeComment;
+        data =
+            <|
+                "NewCommand"->extractNewCommand[string],
+                "RenewCommand"->extractRenewCommand[string],
+                "NewEnvironment"->extractNewEnvironment[string]
+            |>;
+        newcommand =
+            data//Lookup[{"NewCommand","RenewCommand"}]//Flatten;
         <|
-            "Newcommand"->extractNewcommand[string],
-            "Renewcommand"->extractRenewcommand[string]
+            "Data"->data,
+            "MathJaxJSONString"->getMathJaxJSONString[newcommand],
+            "MathJaxTestString"->getMathJaxTestString[newcommand]
         |>
     ];
 
 
-(* ::Subsubsection:: *)
+(* ::Subsection:: *)
 (*Helper*)
 
 
-cleanComment[string_] :=
+removeIgnoredLine[string_String] :=
+    StringDelete[string,$ignoredLineP];
+
+
+removeIgnoredBlock[string_String] :=
+    StringDelete[string,$ignoredBlockP];
+
+
+removeComment[string_String] :=
     StringDelete[string,$commentP];
 
 
-extractNewcommand[string_] :=
+extractNewCommand[string_String] :=
     StringCases[string,$newcommandP:><|
         "Name"->"$1",
         "ArgNumber"->
@@ -95,7 +122,7 @@ extractNewcommand[string_] :=
     |>];
 
 
-extractRenewcommand[string_] :=
+extractRenewCommand[string_String] :=
     StringCases[string,$renewcommandP:><|
         "Name"->"$1",
         "ArgNumber"->
@@ -105,6 +132,29 @@ extractRenewcommand[string_] :=
             ],
         "Definition"->"$4"
     |>];
+
+
+extractNewEnvironment[string_String]:=
+	Pass;
+
+
+getMathJaxJSONString[data:{___Association}] :=
+    data//Query[All,
+        If[ #ArgNumber===0,
+            #Name->#Definition,
+            (*Else*)
+            #Name->{#Definition,#ArgNumber}
+        ]&
+    ]//ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
+
+
+getMathJaxTestString[data:{___Association}] :=
+    data//Query[All,"\\"~~#Name~~StringRepeat["{*}",#ArgNumber]&]//
+    	StringRiffle[#,{
+    	    "# MathJax macro\n\nWatched by LaTeX-macro-convert.nb${}$\n\n\\begin{align}\n&",
+    	    "\\\\\n&",
+    	    "\n\\end{align}\n"
+	    }]&;
 
 
 (* ::Subsection:: *)
