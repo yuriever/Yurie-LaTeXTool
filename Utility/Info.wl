@@ -26,8 +26,8 @@ $thisTestDir::usage =
 $thisTestSourceDir::usage =
     "directory of source notebook for unit test.";
 
-$thisLibrary::usage =
-    "file path of library.";
+$thisPromptDir::usage =
+    "directory of prompt.";
 
 
 (* ::Section:: *)
@@ -63,8 +63,8 @@ $thisTestDir =
 $thisTestSourceDir =
     $thisPaclet["AssetLocation","TestSource"];
 
-$thisLibrary =
-    FileNameJoin@{$thisPaclet["AssetLocation","Library"],"LaTeX-Workshop-master","dev","pkgcommand.py"};
+$thisPromptDir =
+    FileNameJoin@{$thisPacletDir,"Workbench","Prompt"};
 
 
 (* ::Subsection:: *)

@@ -36,7 +36,6 @@ PacletObject[
         "Assets" -> {
           {"License", "LICENSE"},
           {"ReadMe", "README.md"},
-          {"Library", "Library"},
           {"Source", "Source"},
           {"Test", "Test"},
           {"TestSource", "TestSource"}

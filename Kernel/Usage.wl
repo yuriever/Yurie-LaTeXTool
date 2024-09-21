@@ -19,10 +19,16 @@ addPackageToJSON::usage =
 	"add package information to JSON files used by LaTeX-Workshop";
 
 
-(* MathJaxMacro.wl *)
+(* Parser-old.wl *)
 
 extractMacroFromSTY::usage =
 	"extract the macros in STY files.";
 
 overwriteMacroInJSON::usage =
 	"overwrite the macros in JSON files used by MathJax.";
+
+
+(* Parser.wl *)
+
+LaTeXParser::usage =
+	"a simple parser of LaTeX.";

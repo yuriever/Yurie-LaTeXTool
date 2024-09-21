@@ -14,8 +14,13 @@
 * `#!wl addPackageToJSON` - add package information to JSON files used by LaTeX-Workshop
 
 
-<!-- MathJaxMacro.wl -->
+<!-- Parser-old.wl -->
 
 * `#!wl extractMacroFromSTY` - extract the macros in STY files.
 
 * `#!wl overwriteMacroInJSON` - overwrite the macros in JSON files used by MathJax.
+
+
+<!-- Parser.wl -->
+
+* `#!wl LaTeXParser` - a simple parser of LaTeX.

@@ -1,0 +1,28 @@
+\ProvidesPackage{test}
+
+% \newcommand without argument
+\newcommand{\nn}{\nonumber}
+\newcommand{\eq}{=}
+\newcommand{\eqq}{\equiv}
+
+% \newcommand with argument
+\newcommand{\set}[1]{\{ #1 \}}
+\newcommand{\Fpq}[5]{\,{}_{#1}F_{#2}\biggl(\genfrac..{0pt}{}{#3}{#4};#5\biggr)}
+
+% \providecommand should be ignored
+% \renewcommand should be treated as \newcommand
+\providecommand{\bra}[1]{{\langle {#1} |}}
+\renewcommand{\bra}[1]{{\langle {#1} |}}
+
+% \newcommand with line break
+\newcommand{\textInMath}[1]{%
+    \,
+    \text{ #1 }
+    \,
+}
+
+% \newcommand with nested {}
+\newcommand{\mathred}[1]{{\color{red} #1}}
+
+% \newcommand in another {}
+\AtBeginDocument{\renewcommand{\check}[1]{\widecheck{#1}}}

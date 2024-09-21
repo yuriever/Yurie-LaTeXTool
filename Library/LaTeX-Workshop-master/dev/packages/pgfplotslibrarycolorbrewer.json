@@ -1,9 +1,0 @@
-{
-  "includes": {
-    "tikzlibrarycolorbrewer": []
-  },
-  "macros": {},
-  "envs": {},
-  "options": [],
-  "keyvals": []
-}
