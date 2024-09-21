@@ -13,7 +13,7 @@ Get["Yurie`LaTeXTool`Usage`"];
 Get["Yurie`LaTeXTool`Info`"];
 
 
-Get["Yurie`LaTeXTool`STYParser`"];
+Get["Yurie`LaTeXTool`Parser`"];
 
 Get["Yurie`LaTeXTool`LaTeXWorkshopCompletion`"];
 
