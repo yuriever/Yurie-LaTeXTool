@@ -109,30 +109,30 @@ $newcommmandT[_] =
 
 $LaTeXWorkshopCommandT =
     TemplateObject[
-		TemplateIf[TemplateSlot["IsRedefined"],
-		    Nothing,
-	        {
-	            "name"->TemplateSlot["Name"],
-	            TemplateIf[TemplateSlot["ArgNumber"]===0,
-	                Nothing,
-	                "arg"->{
-	                    "format"->TemplateExpression@StringRepeat["{}",TemplateSlot["ArgNumber"]],
-	                    "snippet"->
-	                        TemplateExpression@StringJoin[
-	                            TemplateSlot["Name"],
-	                            TemplateSequence[
-	                                StringTemplate["{${``:}}"],
-	                                TemplateExpression@Range@TemplateSlot["ArgNumber"]
-	                            ]
-	                        ]
-	                }
-	            ]
-	        }
-		]
+        TemplateIf[TemplateSlot["IsRedefined"],
+            Nothing,
+            {
+                "name"->TemplateSlot["Name"],
+                TemplateIf[TemplateSlot["ArgNumber"]===0,
+                    Nothing,
+                    "arg"->{
+                        "format"->TemplateExpression@StringRepeat["{}",TemplateSlot["ArgNumber"]],
+                        "snippet"->
+                            TemplateExpression@StringJoin[
+                                TemplateSlot["Name"],
+                                TemplateSequence[
+                                    StringTemplate["{${``:}}"],
+                                    TemplateExpression@Range@TemplateSlot["ArgNumber"]
+                                ]
+                            ]
+                    }
+                ]
+            }
+        ]
     ];
 
 
-$LaTeXWorkshopPackageT=
+$LaTeXWorkshopPackageT =
     TemplateObject[
         {
             "name"->TemplateSlot["Name"]
@@ -309,7 +309,6 @@ getLaTeXWorkshopCompletion[command:{___Association},package:{___Association}] :=
         "keys"->{},
         "args"->{}
     }//ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
-
 
 
 (* ::Subsection:: *)

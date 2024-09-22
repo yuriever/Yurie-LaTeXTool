@@ -4,7 +4,7 @@
 (*Begin*)
 
 
-BeginPackage["Yurie`LaTeXTool`LaTeXFormatter`"];
+BeginPackage["Yurie`LaTeXTool`LaTeXFormat`"];
 
 
 Needs["Yurie`LaTeXTool`"];
@@ -12,6 +12,9 @@ Needs["Yurie`LaTeXTool`"];
 
 (* ::Section:: *)
 (*Public*)
+
+
+
 
 
 adjustPunctuationSpacingOfEquation::usage =

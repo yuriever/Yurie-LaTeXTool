@@ -23,19 +23,21 @@ PacletObject[
         "Kernel",
         "Root" -> "Utility",
         "Context" -> {
-          "Yurie`LaTeXTool`Info`"
+          "Yurie`LaTeXTool`Info`",
+          "Yurie`LaTeXTool`Library`"
         }
       },
-      (*{
+      {
         "AutoCompletionData",
         "Root" -> "AutoCompletionData"
-      },*)
+      },
       {
         "Asset",
         "Root" -> ".",
         "Assets" -> {
           {"License", "LICENSE"},
           {"ReadMe", "README.md"},
+          {"Library", "Library"},
           {"Source", "Source"},
           {"Test", "Test"},
           {"TestSource", "TestSource"}
