@@ -9,9 +9,6 @@ BeginPackage["Yurie`LaTeXTool`LaTeXParser`"];
 
 Needs["Yurie`LaTeXTool`"];
 
-ClearAll["`*"];
-
-
 
 (* ::Section:: *)
 (*Public*)
@@ -40,12 +37,6 @@ Begin["`Private`"];
 
 $newcommandP =
     RegularExpression["\\\\newcommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
-
-$renewcommandP =
-    RegularExpression["\\\\renewcommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
-
-$providecommandP =
-    RegularExpression["\\\\providecommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
 
 $commandP =
     RegularExpression["\\\\(newcommand|renewcommand)\\{\\\\(\\w+)\\}(?:\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
@@ -176,12 +167,12 @@ LaTeXParser::notype =
 (*Main*)
 
 
-LaTeXParser[file:_String|_File,opts:OptionsPattern[]]/;FileExistsQ[file] :=
+LaTeXParser[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
     file//Import[#,"Text"]&//
 		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 
 
-LaTeXParser[dir:_String|_File,fileNameList:{__String},opts:OptionsPattern[]]/;DirectoryQ[dir] :=
+LaTeXParser[opts:OptionsPattern[]][dir:_String|_File,fileNameList:{__String}]/;DirectoryQ[dir] :=
     fileNameList//Map[FileNameJoin[dir,#]&]//Map[Import[#,"Text"]&]//StringRiffle[#,"\n"]&//
 		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 

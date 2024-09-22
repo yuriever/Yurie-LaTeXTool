@@ -29,6 +29,12 @@ $thisTestSourceDir::usage =
 $thisPromptDir::usage =
     "directory of prompt.";
 
+$thisCompletionDir::usage =
+    "directory of auto completion data.";
+
+$thisLibraryDir::usage =
+    "directory of library.";
+
 
 (* ::Section:: *)
 (*Private*)
@@ -65,6 +71,12 @@ $thisTestSourceDir =
 
 $thisPromptDir =
     FileNameJoin@{$thisPacletDir,"Workbench","Prompt"};
+
+$thisCompletionDir =
+    FileNameJoin@{$thisPaclet["Location"],"AutoCompletionData"};
+
+$thisLibraryDir =
+    FileNameJoin@{$thisPaclet["AssetLocation","Library"],$SystemID};
 
 
 (* ::Subsection:: *)

@@ -17,7 +17,7 @@ Get["Yurie`LaTeXTool`LaTeXParser`"];
 
 Get["Yurie`LaTeXTool`MathJaxOverwriteMacro`"];
 
-(*Get["Yurie`LaTeXTool`LaTeXFormatter`"];*)
+Get["Yurie`LaTeXTool`LaTeXFormatter`"];
 
 
 (* ::Section:: *)

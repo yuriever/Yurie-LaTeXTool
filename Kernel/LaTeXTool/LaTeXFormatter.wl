@@ -185,6 +185,34 @@ deletePercentageAroundEquationInString[str_] :=
 
 
 (* ::Subsection:: *)
+(*convertCWLToJSON*)
+
+
+(* ::Subsubsection:: *)
+(*Main*)
+
+
+convertCWLToJSON[sourceDir_?DirectoryQ,targetDir_?DirectoryQ] :=
+    WithCleanup[
+        shell =
+            StartExternalSession["Shell"],
+        Scan[
+            ExternalEvaluate[shell,"python "<>robustPath[$thisLibrary]<>" -i "<>robustPath[#]<>" -o "<>robustPath[targetDir]]&,
+            FileNames["*.cwl",sourceDir]
+        ],
+        DeleteObject[shell]
+    ];
+
+
+(* ::Subsubsection:: *)
+(*Helper*)
+
+
+robustPath[path_] :=
+    "\""<>AbsoluteFileName[path]<>"\"";
+
+
+(* ::Subsection:: *)
 (*End*)
 
 
