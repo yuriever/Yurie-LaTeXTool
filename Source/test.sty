@@ -1,10 +1,21 @@
 \ProvidesPackage{test}
 
+\usepackage{amsopn} % LaTeXTool-Skip
+
+\usepackage{amsmath}
+
+\usepackage[opt=true,opt2]{test}
+
+\usepackage[
+    opt=true,
+    opt2
+]{test2}
+
 % ignored lines
-% LaTeXTool: off
-\newcommand{\ignored}{ignored}
-% LaTeXTool: on
-\newcommand{\ignoredd}{ignored} % LaTeXTool: skip
+% LaTeXTool-Off
+\newcommand{\ignoredblock}{ignored}
+% LaTeXTool-On
+\newcommand{\ignoredline}{ignored} % LaTeXTool-Skip
 
 % \newcommand without argument
 \newcommand{\nn}{\nonumber}
@@ -15,25 +26,31 @@
 \newcommand{\set}[1]{\{ #1 \}}
 \newcommand{\Fpq}[5]{\,{}_{#1}F_{#2}\biggl(\genfrac..{0pt}{}{#3}{#4};#5\biggr)}
 
-% \providecommand should be ignored
+% \providecommand is rare and will be ignored
 % \renewcommand should be treated as \newcommand
 \providecommand{\bra}[1]{{\langle {#1} |}}
 \renewcommand{\bra}[1]{{\langle {#1} |}}
 
 % \newcommand with line break
 \newcommand{\textInMath}[1]{%
-    \,
-    \text{ #1 }
-    \,
+  \,
+  \text{ #1 }
+  \,
 }
 
 % \newcommand with nested {}
 \newcommand{\mathred}[1]{{\color{red} #1}}
+\newcommand{\tp}{%
+    {\scriptscriptstyle \mathsf{T} }
+}
 
 % \newcommand in another {}
 \AtBeginDocument{\renewcommand{\check}[1]{\widecheck{#1}}}
 
-% ignored lines
-% LaTeXTool: off
-\newcommand{\ignored}{ignored}
-% LaTeXTool: on
+% LaTeXTool-Off
+\newcommand{\ignoredblocktwo}{ignored}
+% LaTeXTool-On
+
+\newcommand{\ignoredMathJax}{ignored} % LaTeXTool-MathJax-Skip
+
+\newcommand{\ignoredLaTeXWorkshop}{ignored} % LaTeXTool-LaTeXWorkshop-Skip

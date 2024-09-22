@@ -4,12 +4,13 @@
 (*Begin*)
 
 
-BeginPackage["Yurie`LaTeXTool`Parser`"];
+BeginPackage["Yurie`LaTeXTool`LaTeXParser`"];
 
 
 Needs["Yurie`LaTeXTool`"];
 
 ClearAll["`*"];
+
 
 
 (* ::Section:: *)
@@ -46,9 +47,18 @@ $renewcommandP =
 $providecommandP =
     RegularExpression["\\\\providecommand\\{\\\\(\\w+)\\}(\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
 
+$commandP =
+    RegularExpression["\\\\(newcommand|renewcommand)\\{\\\\(\\w+)\\}(?:\\[(\\d+)\\])?\\{((?:[^{}]|\\{(?:[^{}]|\\{[^{}]*\\})*\\})*)\\}"];
+
 
 $newenvironmentP =
-	Pass;
+    Pass;
+
+
+(*FileNameJoin[$thisPromptDir,"regex for comment.nb"]*)
+
+$usepackageP =
+    RegularExpression["\\\\usepackage(\\[([^\\]]*)\\])?\\{([^\\}]*)\\}"];
 
 
 (*FileNameJoin[$thisPromptDir,"regex for comment.nb"]*)
@@ -57,39 +67,143 @@ $commentP =
     RegularExpression["(?m)(%.*)$"];
 
 
-$ignoredLineP =
-	StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXTool: skip"~~EndOfLine;
+(* ::Text:: *)
+(*types of skipped lines*)
 
-$ignoredBlockP =
-    StartOfLine~~"% LaTeXTool: off"~~Shortest[___]~~"% LaTeXTool: on"~~EndOfLine;
+
+$skipTypeList =
+    {"MathJax","LaTeXWorkshop"};
+
+
+$skippedLineP[type_] :=
+    $skippedLineP[type] =
+        StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXTool-"~~type~~"-Skip"~~EndOfLine;
+
+$skippedLineP["Default"] =
+    StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXTool-Skip"~~EndOfLine;
+
+
+$skippedBlockP[type_] :=
+    $skippedBlockP[type] =
+        "% LaTeXTool-"~~type~~"-Off"~~Shortest[___]~~"% LaTeXTool-"~~type~~"-On";
+
+$skippedBlockP["Default"] =
+    "% LaTeXTool-Off"~~Shortest[___]~~"% LaTeXTool-On";
+
+
+(* ::Text:: *)
+(*template*)
+
+
+$MathJaxJSONT =
+    TemplateObject[
+        TemplateSlot["Name"]->
+            TemplateIf[TemplateSlot["ArgNumber"]===0,
+                TemplateSlot["Definition"],
+                {TemplateSlot["Definition"],TemplateSlot["ArgNumber"]}
+            ]
+    ];
+
+
+$MathJaxTestT =
+    StringTemplate["\\`Name`<* StringRepeat[\"{*}\",#ArgNumber] *>"];
+
+
+$newcommmandT[0] =
+    StringTemplate["\\newcommand{\\`Name`}{`Definition`}"];
+
+$newcommmandT[_] =
+    StringTemplate["\\newcommand{\\`Name`}[`ArgNumber`]{`Definition`}"];
+
+
+$LaTeXWorkshopCommandT =
+    TemplateObject[
+		TemplateIf[TemplateSlot["IsRedefined"],
+		    Nothing,
+	        {
+	            "name"->TemplateSlot["Name"],
+	            TemplateIf[TemplateSlot["ArgNumber"]===0,
+	                Nothing,
+	                "arg"->{
+	                    "format"->TemplateExpression@StringRepeat["{}",TemplateSlot["ArgNumber"]],
+	                    "snippet"->
+	                        TemplateExpression@StringJoin[
+	                            TemplateSlot["Name"],
+	                            TemplateSequence[
+	                                StringTemplate["{${``:}}"],
+	                                TemplateExpression@Range@TemplateSlot["ArgNumber"]
+	                            ]
+	                        ]
+	                }
+	            ]
+	        }
+		]
+    ];
+
+
+$LaTeXWorkshopPackageT=
+    TemplateObject[
+        {
+            "name"->TemplateSlot["Name"]
+        }
+    ];
+
+
+(* ::Subsection:: *)
+(*Option*)
+
+
+parseString//Options = {
+    "SkipType"->Automatic,
+    "TrimDefinition"->True,
+    "TrimOption"->True
+};
+
+
+LaTeXParser//Options =
+    Options@parseString;
+
+
+(* ::Subsection:: *)
+(*Message*)
+
+
+LaTeXParser::notype =
+    "the option SkipType only accepts `` or All. The default option value All is adopted.";
 
 
 (* ::Subsection:: *)
 (*Main*)
 
 
-Needs["Lacia`Base`"];
+LaTeXParser[file:_String|_File,opts:OptionsPattern[]]/;FileExistsQ[file] :=
+    file//Import[#,"Text"]&//
+		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 
-ClearAll[LaTeXParser];
+
+LaTeXParser[dir:_String|_File,fileNameList:{__String},opts:OptionsPattern[]]/;DirectoryQ[dir] :=
+    fileNameList//Map[FileNameJoin[dir,#]&]//Map[Import[#,"Text"]&]//StringRiffle[#,"\n"]&//
+		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 
 
-
-LaTeXParser[file_] :=
-    Module[ {string,data,newcommand},
+parseString[opts:OptionsPattern[]][string1_String] :=
+    Module[ {string,data,typeList},
+        typeList =
+            checkAndReturnSkipType[OptionValue["SkipType"]];
         string =
-            Import[file,"Text"]//removeIgnoredLine//removeIgnoredBlock//removeComment;
+            string1//removeSkippedLine[typeList]//removeSkippedBlock[typeList]//removeComment;
         data =
             <|
-                "NewCommand"->extractNewCommand[string],
-                "RenewCommand"->extractRenewCommand[string],
-                "NewEnvironment"->extractNewEnvironment[string]
+                "Command"->extractCommand[string,OptionValue["TrimDefinition"]],
+                "Environment"->extractEnvironment[string],
+                "Package"->extractPackage[string,OptionValue["TrimOption"]]
             |>;
-        newcommand =
-            data//Lookup[{"NewCommand","RenewCommand"}]//Flatten;
         <|
             "Data"->data,
-            "MathJaxJSONString"->getMathJaxJSONString[newcommand],
-            "MathJaxTestString"->getMathJaxTestString[newcommand]
+            "MathJaxJSON"->getMathJaxJSON[data["Command"]],
+            "MathJaxTest"->getMathJaxTest[data["Command"]],
+            "LaTeXWorkshopPreviewCode"->getLaTeXWorkshopPreviewCode[data["Command"]],
+            "LaTeXWorkshopCompletion"->getLaTeXWorkshopCompletion[data["Command"],data["Package"]]
         |>
     ];
 
@@ -98,63 +212,113 @@ LaTeXParser[file_] :=
 (*Helper*)
 
 
-removeIgnoredLine[string_String] :=
-    StringDelete[string,$ignoredLineP];
+checkAndReturnSkipType[types_] :=
+    Module[ {typeList},
+        typeList =
+            Which[
+                types===Automatic,
+                    {},
+                types===All,
+                    $skipTypeList,
+                MatchQ[types,Alternatives@@$skipTypeList],
+                    {types},
+                MatchQ[types,_List]&&SubsetQ[$skipTypeList,types],
+                    types,
+                True,
+                    Message[LaTeXParser::notype,StringRiffle[$skipTypeList,", "]];
+                    $skipTypeList
+            ];
+        Join[{"Default"},typeList]
+    ];
 
 
-removeIgnoredBlock[string_String] :=
-    StringDelete[string,$ignoredBlockP];
+removeSkippedLine[typeList_List][string_String] :=
+    Fold[StringDelete[#1,$skippedLineP[#2]]&,string,typeList];
+
+
+removeSkippedBlock[typeList_List][string_String] :=
+    Fold[StringDelete[#1,$skippedBlockP[#2]]&,string,typeList];
 
 
 removeComment[string_String] :=
     StringDelete[string,$commentP];
 
 
-extractNewCommand[string_String] :=
-    StringCases[string,$newcommandP:><|
-        "Name"->"$1",
+extractCommand[string_String,ifTrimDefinition_] :=
+    StringCases[string,$commandP:><|
+        "Name"->"$2",
         "ArgNumber"->
             If[ "$3"==="",
                 0,
+                (*Else*)
                 ToExpression["$3"]
             ],
-        "Definition"->"$4"
+        "Definition"->
+            If[ ifTrimDefinition,
+                trimWhiteSpace["$4"],
+                (*Else*)
+                "$4"
+            ],
+        "IsRedefined"->
+            Switch[ "$1",
+                "newcommand",
+                    False,
+                "renewcommand",
+                    True
+            ],
+        "Code"->"$0"
     |>];
 
 
-extractRenewCommand[string_String] :=
-    StringCases[string,$renewcommandP:><|
-        "Name"->"$1",
-        "ArgNumber"->
-            If[ "$3"==="",
-                0,
-                ToExpression["$3"]
+trimWhiteSpace[string_String] :=
+    string//StringReplace[WhitespaceCharacter->" "]//StringReplace[" "..->" "]//StringTrim;
+
+
+extractEnvironment[string_String] :=
+    Pass;
+
+
+extractPackage[string_String,ifTrimOption_] :=
+    StringCases[string,$usepackageP:><|
+        "Name"->"$3",
+        "Option"->
+            If[ ifTrimOption,
+                trimWhiteSpace["$2"],
+                (*Else*)
+                "$2"
             ],
-        "Definition"->"$4"
+        "Code"->"$0"
     |>];
 
 
-extractNewEnvironment[string_String]:=
-	Pass;
+getMathJaxJSON[command:{___Association}] :=
+    command//Query[All,$MathJaxJSONT]//
+    	ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
 
 
-getMathJaxJSONString[data:{___Association}] :=
-    data//Query[All,
-        If[ #ArgNumber===0,
-            #Name->#Definition,
-            (*Else*)
-            #Name->{#Definition,#ArgNumber}
-        ]&
-    ]//ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
-
-
-getMathJaxTestString[data:{___Association}] :=
-    data//Query[All,"\\"~~#Name~~StringRepeat["{*}",#ArgNumber]&]//
+getMathJaxTest[command:{___Association}] :=
+    command//Query[All,$MathJaxTestT]//
     	StringRiffle[#,{
-    	    "# MathJax macro\n\nWatched by LaTeX-macro-convert.nb${}$\n\n\\begin{align}\n&",
-    	    "\\\\\n&",
-    	    "\n\\end{align}\n"
-	    }]&;
+            "# LaTeXTool-MathJax\n\n${}$\n\\begin{align}\n&",
+            "\\\\\n&",
+            "\n\\end{align}\n"
+        }]&;
+
+
+getLaTeXWorkshopPreviewCode[command:{___Association}] :=
+    command//Query[All,$newcommmandT[#ArgNumber][#]&]//
+    	StringRiffle[#,"\n"]&
+
+
+getLaTeXWorkshopCompletion[command:{___Association},package:{___Association}] :=
+    {
+        "deps"->Query[All,$LaTeXWorkshopPackageT][package],
+        "macros"->Query[All,$LaTeXWorkshopCommandT][command],
+        "envs"->{},
+        "keys"->{},
+        "args"->{}
+    }//ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
+
 
 
 (* ::Subsection:: *)

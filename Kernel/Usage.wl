@@ -10,6 +10,12 @@ deletePercentageAroundEquation::usage =
 	"delete all percentage symbols before and after equations.";
 
 
+(* LaTeXParser.wl *)
+
+LaTeXParser::usage =
+	"a simple parser of LaTeX.";
+
+
 (* LaTeXWorkshopCompletion.wl *)
 
 convertCWLToJSON::usage =
@@ -19,16 +25,7 @@ addPackageToJSON::usage =
 	"add package information to JSON files used by LaTeX-Workshop";
 
 
-(* Parser2.wl *)
+(* MathJaxOverwriteMacro.wl *)
 
-extractMacroFromSTY::usage =
-	"extract the macros in STY files.";
-
-overwriteMacroInJSON::usage =
+MathJaxOverwriteMacro::usage =
 	"overwrite the macros in JSON files used by MathJax.";
-
-
-(* Parser.wl *)
-
-LaTeXParser::usage =
-	"a simple parser of LaTeX.";

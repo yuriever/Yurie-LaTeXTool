@@ -13,13 +13,11 @@ Get["Yurie`LaTeXTool`Usage`"];
 Get["Yurie`LaTeXTool`Info`"];
 
 
-Get["Yurie`LaTeXTool`Parser`"];
+Get["Yurie`LaTeXTool`LaTeXParser`"];
 
-Get["Yurie`LaTeXTool`Parser2`"];
+Get["Yurie`LaTeXTool`MathJaxOverwriteMacro`"];
 
-Get["Yurie`LaTeXTool`LaTeXWorkshopCompletion`"];
-
-Get["Yurie`LaTeXTool`LaTeXFormatter`"];
+(*Get["Yurie`LaTeXTool`LaTeXFormatter`"];*)
 
 
 (* ::Section:: *)
