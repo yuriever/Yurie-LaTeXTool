@@ -33,11 +33,11 @@ Begin["`Private`"];
 (*Constant*)
 
 
-$MathJaxMacroOpener=
-	"// LaTeXTool-MathJax-Begin";
+$MathJaxMacroOpener =
+    "// LaTeXTool-MathJax-Begin";
 
-$MathJaxMacroCloser=
-	"// LaTeXTool-MathJax-End";
+$MathJaxMacroCloser =
+    "// LaTeXTool-MathJax-End";
 
 
 (* ::Subsection:: *)

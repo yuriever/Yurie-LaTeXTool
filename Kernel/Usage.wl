@@ -1,13 +1,7 @@
-(* LaTeXFormatter.wl *)
+(* LaTeXFormat.wl *)
 
-adjustPunctuationSpacingOfEquation::usage =
-	"adjust the spacing of punctuations in equations.";
-
-addPercentageAroundEquation::usage =
-	"add a percentage symbol before and after equations.";
-
-deletePercentageAroundEquation::usage =
-	"delete all percentage symbols before and after equations.";
+LaTeXFormat::usage =
+	"format the LaTeX file.";
 
 
 (* LaTeXParser.wl *)

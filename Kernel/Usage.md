@@ -1,10 +1,6 @@
-<!-- LaTeXFormatter.wl -->
+<!-- LaTeXFormat.wl -->
 
-* `#!wl adjustPunctuationSpacingOfEquation` - adjust the spacing of punctuations in equations.
-
-* `#!wl addPercentageAroundEquation` - add a percentage symbol before and after equations.
-
-* `#!wl deletePercentageAroundEquation` - delete all percentage symbols before and after equations.
+* `#!wl LaTeXFormat` - format the LaTeX file.
 
 
 <!-- LaTeXParser.wl -->

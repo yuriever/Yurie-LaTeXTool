@@ -30,6 +30,14 @@ Begin["`Private`"];
 
 
 (* ::Subsection:: *)
+(*Message*)
+
+
+prepareLibrary::failed =
+    "the library tex-fmt fails to download."
+
+
+(* ::Subsection:: *)
 (*Main*)
 
 
@@ -42,10 +50,11 @@ prepareLibrary[] :=
             URL["https://github.com/WGUNDERWOOD/tex-fmt/releases/latest/download/tex-fmt-aarch64-macos.tar.gz"],
             $thisLibraryDir
         ];
-        File@FileNameJoin[$thisLibraryDir,"tex-fmt"]
         ,
         (**)
-        Null
+        If[ !FileExistsQ@FileNameJoin[$thisLibraryDir,"tex-fmt"],
+            Message[prepareLibrary::failed]
+        ]
     ];
 
 
