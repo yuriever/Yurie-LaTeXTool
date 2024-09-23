@@ -145,7 +145,7 @@ LaTeXFormatByLibrary[file_] :=
             Message[LaTeXFormat::notexist];
             Throw[Null,"LaTeXFormat"]
         ];
-        ExternalEvaluate["Shell",robustPath[library]<>" "<>robustPath[file]]
+        ExternalEvaluate["Shell",robustPath[library]<>" --keep "<>robustPath[file]]
     ];
 
 
