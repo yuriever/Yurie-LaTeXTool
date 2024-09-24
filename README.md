@@ -2,6 +2,8 @@
 
 LaTeX tools.
 
+## Documentation
+
 ## Install
 
 Install from this repository:
@@ -41,9 +43,3 @@ PacletInstall["Yurie/LaTeXTool"]
 ``` wl
 PacletUninstall["Yurie/LaTeXTool"]
 ```
-
-## Documentation
-
-## Todo
-
-Currently the cwl file generation depends on LaTeX-Workshop, which should be decoupled.
