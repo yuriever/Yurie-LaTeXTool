@@ -4,6 +4,8 @@ LaTeX tools.
 
 ## Documentation
 
+<https://yuriever.github.io/symbolic/Yurie__LaTeXTool/doc/>
+
 ## Install
 
 Install from this repository:
