@@ -12,7 +12,7 @@ Get["Yurie`LaTeXTool`Usage`"];
 
 Get["Yurie`LaTeXTool`LaTeXParser`"];
 
-Get["Yurie`LaTeXTool`MathJaxOverwriteMacro`"];
+Get["Yurie`LaTeXTool`MathJaxJSOverwrite`"];
 
 Get["Yurie`LaTeXTool`LaTeXFormat`"];
 

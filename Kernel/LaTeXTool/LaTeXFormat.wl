@@ -119,7 +119,7 @@ LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
     ];
 
 
-LaTeXFormatKernel[opts:OptionsPattern[]][string_] :=
+LaTeXFormatKernel[OptionsPattern[]][string_] :=
     If[ MatchQ[OptionValue["EquationMarkSpacing"],$markSpacingP|None],
         string//surroundEquationWithPercent[OptionValue["SurroundEquationWithPercent"]]//
 			adjustEquationMarkSpacing[OptionValue["EquationMarkSpacing"]],
@@ -195,6 +195,10 @@ addPercentPairAroundEquation[string_String] :=
 
 adjustEquationMarkSpacing[spacing_][string_String] :=
     string//StringReplace[{
+        (*dummy rule to skip the magic-commented equations.*)
+        magic:("% LaTeXFormat-EMS-Off"~~Shortest[___]~~"% LaTeXFormat-EMS-On"):>
+            magic,
+        (*find and replace equations.*)
         "\\begin"~~env:$equationP~~Shortest[body___]~~"\\end"~~env__:>
             "\\begin"~~env~~adjustMarkSpacingInEquation[spacing][body]~~"\\end"~~env
     }];

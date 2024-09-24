@@ -1,6 +1,6 @@
 \ProvidesPackage{test}
 
-\usepackage{amsopn} % LaTeXTool-Skip
+\usepackage{amsopn} % LaTeXParser-Skip
 
 \usepackage{amsmath}
 
@@ -12,10 +12,10 @@
 ]{test2}
 
 % ignored lines
-% LaTeXTool-Off
+% LaTeXParser-Off
 \newcommand{\ignoredblock}{ignored}
-% LaTeXTool-On
-\newcommand{\ignoredline}{ignored} % LaTeXTool-Skip
+% LaTeXParser-On
+\newcommand{\ignoredline}{ignored} % LaTeXParser-Skip
 
 % \newcommand without argument
 \newcommand{\nn}{\nonumber}
@@ -47,10 +47,10 @@
 % \newcommand in another {}
 \AtBeginDocument{\renewcommand{\check}[1]{\widecheck{#1}}}
 
-% LaTeXTool-Off
+% LaTeXParser-Off
 \newcommand{\ignoredblocktwo}{ignored}
-% LaTeXTool-On
+% LaTeXParser-On
 
-\newcommand{\ignoredMathJax}{ignored} % LaTeXTool-MathJax-Skip
+\newcommand{\ignoredMathJax}{ignored} % LaTeXParser-MathJax-Skip
 
-\newcommand{\ignoredLaTeXWorkshop}{ignored} % LaTeXTool-LaTeXWorkshop-Skip
+\newcommand{\ignoredLaTeXWorkshop}{ignored} % LaTeXParser-LaTeXWorkshop-Skip

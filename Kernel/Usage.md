@@ -8,6 +8,6 @@
 * `#!wl LaTeXParser` - a simple parser of LaTeX.
 
 
-<!-- MathJaxOverwriteMacro.wl -->
+<!-- MathJaxJSOverwrite.wl -->
 
-* `#!wl MathJaxOverwriteMacro` - overwrite the macros in JSON files used by MathJax.
+* `#!wl MathJaxJSOverwrite` - overwrite JavaScript files used by MathJax.

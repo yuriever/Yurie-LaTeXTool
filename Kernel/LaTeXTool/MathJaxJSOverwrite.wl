@@ -4,7 +4,7 @@
 (*Begin*)
 
 
-BeginPackage["Yurie`LaTeXTool`MathJaxOverwriteMacro`"];
+BeginPackage["Yurie`LaTeXTool`MathJaxJSOverwrite`"];
 
 
 Needs["Yurie`LaTeXTool`"];
@@ -14,8 +14,8 @@ Needs["Yurie`LaTeXTool`"];
 (*Public*)
 
 
-MathJaxOverwriteMacro::usage =
-    "overwrite the macros in JSON files used by MathJax.";
+MathJaxJSOverwrite::usage =
+    "overwrite JavaScript files used by MathJax.";
 
 
 (* ::Section:: *)
@@ -34,24 +34,24 @@ Begin["`Private`"];
 
 
 $MathJaxMacroOpener =
-    "// LaTeXTool-MathJax-Begin";
+    "// MathJaxJSOverwrite-Macro-Begin";
 
 $MathJaxMacroCloser =
-    "// LaTeXTool-MathJax-End";
+    "// MathJaxJSOverwrite-Macro-End";
 
 
 (* ::Subsection:: *)
 (*Main*)
 
 
-MathJaxOverwriteMacro[file:_String|_File,macro_String] :=
+MathJaxJSOverwrite[macro_String][file:_String|_File] :=
     Import[file,"String"]//StringReplace[
         $MathJaxMacroOpener~~"\n"~~blanks:Whitespace~~"macros: "~~___~~$MathJaxMacroCloser:>
             $MathJaxMacroOpener~~"\n"~~lineMoveRight[blanks]@StringJoin["macros: ",macro]~~",\n"~~blanks~~$MathJaxMacroCloser
     ]//Export[file,#,"Text"]&//File;
 
-MathJaxOverwriteMacro[fileList_List,macro_String] :=
-    Map[MathJaxOverwriteMacro[#,macro]&,fileList];
+MathJaxJSOverwrite[macro_String][fileList_List] :=
+    Map[MathJaxJSOverwrite[macro],fileList];
 
 
 (* ::Subsection:: *)

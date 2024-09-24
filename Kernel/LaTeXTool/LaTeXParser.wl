@@ -59,27 +59,23 @@ $commentP =
 
 
 (* ::Text:: *)
-(*types of skipped lines*)
-
-
-$skipTypeList =
-    {"MathJax","LaTeXWorkshop"};
+(*pattern of skipped lines and blocks*)
 
 
 $skippedLineP[type_] :=
     $skippedLineP[type] =
-        StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXTool-"~~type~~"-Skip"~~EndOfLine;
+        StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXParser-"~~type~~"-Skip"~~EndOfLine;
 
-$skippedLineP["Default"] =
-    StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXTool-Skip"~~EndOfLine;
+$skippedLineP["Automatic"] =
+    StartOfLine~~Shortest[Except["\n"]...]~~"% LaTeXParser-Skip"~~EndOfLine;
 
 
 $skippedBlockP[type_] :=
     $skippedBlockP[type] =
-        "% LaTeXTool-"~~type~~"-Off"~~Shortest[___]~~"% LaTeXTool-"~~type~~"-On";
+        "% LaTeXParser-"~~type~~"-Off"~~Shortest[___]~~"% LaTeXParser-"~~type~~"-On";
 
-$skippedBlockP["Default"] =
-    "% LaTeXTool-Off"~~Shortest[___]~~"% LaTeXTool-On";
+$skippedBlockP["Automatic"] =
+    "% LaTeXParser-Off"~~Shortest[___]~~"% LaTeXParser-On";
 
 
 (* ::Text:: *)
@@ -160,7 +156,7 @@ LaTeXParser//Options =
 
 
 LaTeXParser::notype =
-    "the option SkipType only accepts `` or All. The default option value All is adopted.";
+    "the option SkipType accepts Automatic, string or list of strings. The default option value Automatic is adopted.";
 
 
 (* ::Subsection:: *)
@@ -177,7 +173,7 @@ LaTeXParser[opts:OptionsPattern[]][dir:_String|_File,fileNameList:{__String}]/;D
 		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 
 
-parseString[opts:OptionsPattern[]][string1_String] :=
+parseString[OptionsPattern[]][string1_String] :=
     Module[ {string,data,typeList},
         typeList =
             checkAndReturnSkipType[OptionValue["SkipType"]];
@@ -209,17 +205,15 @@ checkAndReturnSkipType[types_] :=
             Which[
                 types===Automatic,
                     {},
-                types===All,
-                    $skipTypeList,
-                MatchQ[types,Alternatives@@$skipTypeList],
+                StringQ[types],
                     {types},
-                MatchQ[types,_List]&&SubsetQ[$skipTypeList,types],
+                MatchQ[types,{__String}],
                     types,
                 True,
-                    Message[LaTeXParser::notype,StringRiffle[$skipTypeList,", "]];
-                    $skipTypeList
+                    Message[LaTeXParser::notype];
+                    {}
             ];
-        Join[{"Default"},typeList]
+        Join[{"Automatic"},typeList]
     ];
 
 
@@ -265,7 +259,7 @@ trimWhiteSpace[string_String] :=
     string//StringReplace[WhitespaceCharacter->" "]//StringReplace[" "..->" "]//StringTrim;
 
 
-extractEnvironment[string_String] :=
+extractEnvironment[_String] :=
     Pass;
 
 
@@ -290,7 +284,7 @@ getMathJaxJSON[command:{___Association}] :=
 getMathJaxTest[command:{___Association}] :=
     command//Query[All,$MathJaxTestT]//
     	StringRiffle[#,{
-            "# LaTeXTool-MathJax\n\n${}$\n\\begin{align}\n&",
+            "# LaTeXParser-MathJax\n\n${}$\n\\begin{align}\n&",
             "\\\\\n&",
             "\n\\end{align}\n"
         }]&;

@@ -10,7 +10,7 @@ LaTeXParser::usage =
 	"a simple parser of LaTeX.";
 
 
-(* MathJaxOverwriteMacro.wl *)
+(* MathJaxJSOverwrite.wl *)
 
-MathJaxOverwriteMacro::usage =
-	"overwrite the macros in JSON files used by MathJax.";
+MathJaxJSOverwrite::usage =
+	"overwrite JavaScript files used by MathJax.";
