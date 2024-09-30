@@ -89,8 +89,10 @@ LaTeXFormatKernel//Options = {
 };
 
 
-LaTeXFormat//Options =
-    Options@LaTeXFormatKernel;
+LaTeXFormat//Options = {
+    "Indentation"->4,
+    Splice@Options@LaTeXFormatKernel
+}
 
 
 (* ::Subsection:: *)
@@ -110,7 +112,7 @@ LaTeXFormat::spacingnotmatch =
 
 LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
     Catch[
-        LaTeXFormatByLibrary[file];
+        LaTeXFormatByLibrary[OptionValue["Indentation"]][file];
         Import[file,"String"]//
         	LaTeXFormatKernel[FilterRules[{opts,Options@LaTeXFormat},Options@LaTeXFormatKernel]]//
 	        	Export[file,#,"String"]&//File,
@@ -137,7 +139,7 @@ LaTeXFormatKernel[OptionsPattern[]][string_] :=
 (*Format by tex-fmt*)
 
 
-LaTeXFormatByLibrary[file_] :=
+LaTeXFormatByLibrary[tabsize_Integer][file_] :=
     Module[ {library},
         library =
             FileNameJoin[$thisLibraryDir,"tex-fmt"];
@@ -145,7 +147,16 @@ LaTeXFormatByLibrary[file_] :=
             Message[LaTeXFormat::notexist];
             Throw[Null,"LaTeXFormat"]
         ];
-        ExternalEvaluate["Shell",robustPath[library]<>" --keep "<>robustPath[file]]
+        ExternalEvaluate[
+            "Shell",
+            <|
+                "Command"->"`texfmtpath` --keep --tab `tabsize` `file`",
+                "TemplateArguments"-><|
+                    "texfmtpath"->robustPath[library],
+                    "tabsize"->tabsize,
+                    "file"->robustPath[file]
+            |>
+        |>]
     ];
 
 
@@ -207,7 +218,8 @@ adjustEquationMarkSpacing[spacing_][string_String] :=
 adjustMarkSpacingInEquation[spacing_][string_String] :=
     string//deleteMarkSpacingInEquation//
     	addMarkSpacingInEquation[spacing]//
-    		moveMarkSpacingToNewline[spacing];
+    		moveMarkSpacingToNewline[spacing]//
+    			trimEmptyLine;
 
 
 deleteMarkSpacingInEquation[string_String] :=
@@ -240,10 +252,16 @@ addMarkSpacingInEquation[None][string_String] :=
 moveMarkSpacingToNewline[spacing_][string_String] :=
     With[ {spacing1 = Which[spacing===None,"",True,spacing~~" "]},
         string//StringReplace[{
+            StartOfLine~~spaces1:WhitespaceCharacter...~~spacing1~~mark:$markP~~Shortest[spaces3:WhitespaceCharacter...]~~end:$hintAfterMarkP:>
+                spaces1~~spacing1~~mark~~spaces3~~end,
             StartOfLine~~spaces1:WhitespaceCharacter...~~Shortest[words:Except["\n"]..]~~Longest[WhitespaceCharacter...]~~spacing1~~mark:$markP~~Shortest[spaces3:WhitespaceCharacter...]~~end:$hintAfterMarkP:>
                 spaces1~~words~~"\n"~~spaces1~~spacing1~~mark~~spaces3~~end
-        }]//StringReplace["\n"..->"\n"]
+        }]
     ];
+
+
+trimEmptyLine[string_String] :=
+    string//StringReplace["\n"~~WhitespaceCharacter..~~"\n"->"\n"]//StringReplace["\n"..->"\n"];
 
 
 (* ::Subsection:: *)
