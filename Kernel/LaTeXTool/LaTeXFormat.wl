@@ -99,7 +99,10 @@ LaTeXFormat//Options = {
 (*Message*)
 
 
-LaTeXFormat::notexist =
+LaTeXFormat::filenotexist =
+    "the file does not exist.";
+
+LaTeXFormat::libnotexist =
     "the library tex-fmt does not exist.";
 
 LaTeXFormat::spacingnotmatch =
@@ -111,24 +114,29 @@ LaTeXFormat::spacingnotmatch =
 
 
 LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
-    Catch[
-        LaTeXFormatByLibrary[OptionValue["Indentation"]][file];
+    Module[ {library = FileNameJoin[$thisLibraryDir,"tex-fmt"]},
+        If[ !FileExistsQ[file],
+            Message[LaTeXFormat::libnotexist];
+            Throw[file]
+        ];
+        If[ !FileExistsQ[library],
+            Message[LaTeXFormat::notexist];
+            Throw[file]
+        ];
+        If[ !MatchQ[OptionValue["EquationMarkSpacing"],$markSpacingP|None],
+            Message[LaTeXFormat::spacingnotmatch,StringRiffle[$markSpacingList,", "]];
+            Throw[file]
+        ];
+        LaTeXFormatByLibrary[library,OptionValue["Indentation"]][file];
         Import[file,"String"]//
         	LaTeXFormatKernel[FilterRules[{opts,Options@LaTeXFormat},Options@LaTeXFormatKernel]]//
-	        	Export[file,#,"String"]&//File,
-        (*Tag*)
-        "LaTeXFormat"
-    ];
+	        	Export[file,#,"String"]&//File
+    ]//Catch;
 
 
 LaTeXFormatKernel[OptionsPattern[]][string_] :=
-    If[ MatchQ[OptionValue["EquationMarkSpacing"],$markSpacingP|None],
-        string//surroundEquationWithPercent[OptionValue["SurroundEquationWithPercent"]]//
-			adjustEquationMarkSpacing[OptionValue["EquationMarkSpacing"]],
-        (*Else*)
-        Message[LaTeXFormat::spacingnotmatch,StringRiffle[$markSpacingList,", "]];
-        Throw[Null,"LaTeXFormat"]
-    ];
+    string//surroundEquationWithPercent[OptionValue["SurroundEquationWithPercent"]]//
+		adjustEquationMarkSpacing[OptionValue["EquationMarkSpacing"]];
 
 
 (* ::Subsection:: *)
@@ -139,25 +147,17 @@ LaTeXFormatKernel[OptionsPattern[]][string_] :=
 (*Format by tex-fmt*)
 
 
-LaTeXFormatByLibrary[tabsize_Integer][file_] :=
-    Module[ {library},
-        library =
-            FileNameJoin[$thisLibraryDir,"tex-fmt"];
-        If[ !FileExistsQ[library],
-            Message[LaTeXFormat::notexist];
-            Throw[Null,"LaTeXFormat"]
-        ];
-        ExternalEvaluate[
-            "Shell",
-            <|
-                "Command"->"`texfmtpath` --keep --tab `tabsize` `file`",
-                "TemplateArguments"-><|
-                    "texfmtpath"->robustPath[library],
-                    "tabsize"->tabsize,
-                    "file"->robustPath[file]
-            |>
-        |>]
-    ];
+LaTeXFormatByLibrary[library_,tabsize_Integer][file_] :=
+    ExternalEvaluate[
+        "Shell",
+        <|
+            "Command"->"`texfmtpath` --keep --tab `tabsize` `file`",
+            "TemplateArguments"-><|
+                "texfmtpath"->robustPath[library],
+                "tabsize"->tabsize,
+                "file"->robustPath[file]
+        |>
+    |>];
 
 
 robustPath[path_] :=
