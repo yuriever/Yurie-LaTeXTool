@@ -9,7 +9,7 @@ PacletObject[
     "License" -> "MIT",
     "PublisherID" -> "Yurie",
     "Version" -> "2.0.0",
-    "WolframVersion" -> "13+",
+    "WolframVersion" -> "14.1+",
     "PrimaryContext" -> "Yurie`LaTeXTool`",
     "Extensions" -> {
       {
