@@ -284,7 +284,7 @@ getMathJaxJSON[command:{___Association}] :=
 getMathJaxTest[command:{___Association}] :=
     command//Query[All,$MathJaxTestT]//
     	StringRiffle[#,{
-            "# LaTeXParser-MathJax\n\n${}$\n\\begin{align}\n&",
+            "# LaTeXParser-MathJax\n\n${}$\n\n\\begin{align}\n&",
             "\\\\\n&",
             "\n\\end{align}\n"
         }]&;
