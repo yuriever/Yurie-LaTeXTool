@@ -76,7 +76,7 @@ $markSpacingP =
 
 
 $hintAfterMarkP =
-    {EndOfString,"\\end","\\\\","\\nn","\\label","\\quad","\\qquad"}//Apply[Alternatives];
+    {EndOfString,"\\end","\\\\","\\nn","\\label","\\quad","\\qquad","\\text"}//Apply[Alternatives];
 
 
 (* ::Subsection:: *)
