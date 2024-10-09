@@ -129,14 +129,14 @@ LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
         ];
         LaTeXFormatByLibrary[library,OptionValue["Indentation"]][file];
         Import[file,"String"]//
-        	LaTeXFormatKernel[FilterRules[{opts,Options@LaTeXFormat},Options@LaTeXFormatKernel]]//
-	        	Export[file,#,"String"]&//File
+            LaTeXFormatKernel[FilterRules[{opts,Options@LaTeXFormat},Options@LaTeXFormatKernel]]//
+                Export[file,#,"String"]&//File
     ]//Catch;
 
 
 LaTeXFormatKernel[OptionsPattern[]][string_] :=
     string//surroundEquationWithPercent[OptionValue["SurroundEquationWithPercent"]]//
-		adjustEquationMarkSpacing[OptionValue["EquationMarkSpacing"]];
+        adjustEquationMarkSpacing[OptionValue["EquationMarkSpacing"]];
 
 
 (* ::Subsection:: *)
@@ -217,9 +217,9 @@ adjustEquationMarkSpacing[spacing_][string_String] :=
 
 adjustMarkSpacingInEquation[spacing_][string_String] :=
     string//deleteMarkSpacingInEquation//
-    	addMarkSpacingInEquation[spacing]//
-    		moveMarkSpacingToNewline[spacing]//
-    			trimEmptyLine;
+        addMarkSpacingInEquation[spacing]//
+            moveMarkSpacingToNewline[spacing]//
+                trimEmptyLine;
 
 
 deleteMarkSpacingInEquation[string_String] :=

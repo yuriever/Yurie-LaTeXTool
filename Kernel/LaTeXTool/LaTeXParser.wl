@@ -165,12 +165,12 @@ LaTeXParser::notype =
 
 LaTeXParser[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
     file//Import[#,"Text"]&//
-		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
+        parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 
 
 LaTeXParser[opts:OptionsPattern[]][dir:_String|_File,fileNameList:{__String}]/;DirectoryQ[dir] :=
     fileNameList//Map[FileNameJoin[dir,#]&]//Map[Import[#,"Text"]&]//StringRiffle[#,"\n"]&//
-		parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
+        parseString[FilterRules[{opts,Options@LaTeXParser},Options@parseString]];
 
 
 parseString[OptionsPattern[]][string1_String] :=
@@ -278,12 +278,12 @@ extractPackage[string_String,ifTrimOption_] :=
 
 getMathJaxJSON[command:{___Association}] :=
     command//Query[All,$MathJaxJSONT]//
-    	ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
+        ExportString[#,"JSON",CharacterEncoding->"ASCII"]&;
 
 
 getMathJaxTest[command:{___Association}] :=
     command//Query[All,$MathJaxTestT]//
-    	StringRiffle[#,{
+        StringRiffle[#,{
             "# LaTeXParser-MathJax\n\n${}$\n\n\\begin{align}\n&",
             "\\\\\n&",
             "\n\\end{align}\n"
@@ -292,7 +292,7 @@ getMathJaxTest[command:{___Association}] :=
 
 getLaTeXWorkshopPreviewCode[command:{___Association}] :=
     command//Query[All,$newcommmandT[#ArgNumber][#]&]//
-    	StringRiffle[#,"\n"]&
+        StringRiffle[#,"\n"]&
 
 
 getLaTeXWorkshopCompletion[command:{___Association},package:{___Association}] :=
