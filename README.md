@@ -4,7 +4,7 @@ LaTeX tools.
 
 ## Documentation
 
-<https://yuriever.github.io/symbolic/Yurie__LaTeXTool/doc/>
+<https://yuriever.github.io/symbolic/Yurie-LaTeXTool/doc/>
 
 ## Install
 
