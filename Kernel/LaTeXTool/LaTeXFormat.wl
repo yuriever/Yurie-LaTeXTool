@@ -11,8 +11,6 @@ Needs["Yurie`LaTeXTool`"];
 
 Needs["Yurie`LaTeXTool`Info`"];
 
-Needs["Yurie`LaTeXTool`Library`"];
-
 
 (* ::Section:: *)
 (*Public*)

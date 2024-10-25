@@ -52,7 +52,8 @@ $equationP =
 
 
 MarkdownFormatKernel//Options = {
-    "SurroundEquationWithEmptyLine"->True
+    "SurroundInlineEquationWithBlank"->True,
+    "SurroundBlockEquationWithEmptyLine"->True
 };
 
 
@@ -94,7 +95,8 @@ MarkdownFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
 
 
 MarkdownFormatKernel[OptionsPattern[]][string_] :=
-    string//surroundInlineEquationWithBlank//surroundEquationWithEmptyLine[OptionValue["SurroundEquationWithEmptyLine"]];
+    string//surroundInlineEquationWithBlank[OptionValue["SurroundInlineEquationWithBlank"]]//
+        surroundBlockEquationWithEmptyLine[OptionValue["SurroundBlockEquationWithEmptyLine"]];
 
 
 (* ::Subsection:: *)
@@ -125,7 +127,14 @@ robustPath[path_] :=
 (*Blank around inline equation*)
 
 
-surroundInlineEquationWithBlank[string_] :=
+surroundInlineEquationWithBlank[True][string_String] :=
+    string//addBlankAroundInlineEquation;
+
+surroundInlineEquationWithBlank[False][string_String] :=
+    string;
+
+
+addBlankAroundInlineEquation[string_] :=
     string//StringReplace[{
         (*dummy rule to skip the magic-commented equations.*)
         magic:("<!-- MarkdownFormat-IEB-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-IEB-Off -->"):>
@@ -144,21 +153,21 @@ surroundInlineEquationWithBlank[string_] :=
 
 
 (* ::Subsubsection:: *)
-(*Percent sign around equation*)
+(*Empty line around block equation*)
 
 
-surroundEquationWithEmptyLine[True][string_String] :=
-    string//deleteAllEmptyLineAroundEquation//addEmptyLineAroundEquation;
+surroundBlockEquationWithEmptyLine[True][string_String] :=
+    string//deleteAllEmptyLineAroundBlockEquation//addEmptyLineAroundBlockEquation;
 
-surroundEquationWithEmptyLine[False][string_String] :=
-    string//deleteAllEmptyLineAroundEquation;
-
-
-deleteAllEmptyLineAroundEquation[string_String] :=
-    FixedPoint[deleteSingleEmptyLineAroundEquation,string,$emptyLineLimit];
+surroundBlockEquationWithEmptyLine[False][string_String] :=
+    string//deleteAllEmptyLineAroundBlockEquation;
 
 
-deleteSingleEmptyLineAroundEquation[string_String] :=
+deleteAllEmptyLineAroundBlockEquation[string_String] :=
+    FixedPoint[deleteSingleEmptyLineAroundBlockEquation,string,$emptyLineLimit];
+
+
+deleteSingleEmptyLineAroundBlockEquation[string_String] :=
     string//StringReplace[{
         (*delete empty line before equations.*)
         StartOfLine~~"\n"~~Shortest[spaces:WhitespaceCharacter...]~~"\\begin"~~env:$equationP~~Shortest[body___]~~"\\end"~~env__:>
@@ -169,7 +178,7 @@ deleteSingleEmptyLineAroundEquation[string_String] :=
     }];
 
 
-addEmptyLineAroundEquation[string_String] :=
+addEmptyLineAroundBlockEquation[string_String] :=
     string//StringReplace[{
         StartOfLine~~Shortest[spaces:Except["\n",WhitespaceCharacter]...]~~"\\begin"~~env:$equationP~~Shortest[body___]~~"\\end"~~env__:>
             "\n"~~spaces~~"\\begin"~~env~~body~~"\\end"~~env~~"\n"
