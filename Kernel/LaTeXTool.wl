@@ -16,6 +16,8 @@ Get["Yurie`LaTeXTool`MathJaxJSOverwrite`"];
 
 Get["Yurie`LaTeXTool`LaTeXFormat`"];
 
+Get["Yurie`LaTeXTool`MarkdownFormat`"];
+
 
 (* ::Section:: *)
 (*End*)

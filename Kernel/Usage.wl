@@ -10,6 +10,12 @@ LaTeXParser::usage =
 	"a simple parser of LaTeX.";
 
 
+(* MarkdownFormat.wl *)
+
+MarkdownFormat::usage =
+	"format the Markdown file.";
+
+
 (* MathJaxJSOverwrite.wl *)
 
 MathJaxJSOverwrite::usage =

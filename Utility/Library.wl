@@ -33,27 +33,51 @@ Begin["`Private`"];
 (*Message*)
 
 
-prepareLibrary::failed =
+prepareLibrary::texfmtfailed =
     "the library tex-fmt fails to download."
+
+prepareLibrary::autocorrectfailed =
+    "the library autocorrect fails to download."
 
 
 (* ::Subsection:: *)
 (*Main*)
 
 
-prepareLibrary[] :=
+prepareLibrary["tex-fmt"] :=
     WithCleanup[
-        Quiet@DeleteDirectory[$thisLibraryDir,DeleteContents->True];
-        CreateDirectory[$thisLibraryDir],
+        If[ !DirectoryQ[$thisLibraryDir],
+            CreateDirectory[$thisLibraryDir]
+        ],
         (**)
         ExtractArchive[
             URL["https://github.com/WGUNDERWOOD/tex-fmt/releases/latest/download/tex-fmt-aarch64-macos.tar.gz"],
-            $thisLibraryDir
+            $thisLibraryDir,
+            OverwriteTarget->True
         ];
         ,
         (**)
         If[ !FileExistsQ@FileNameJoin[$thisLibraryDir,"tex-fmt"],
-            Message[prepareLibrary::failed]
+            Message[prepareLibrary::texfmtfailed]
+        ]
+    ];
+
+
+prepareLibrary["autocorrect"] :=
+    WithCleanup[
+        If[ !DirectoryQ[$thisLibraryDir],
+            CreateDirectory[$thisLibraryDir]
+        ],
+        (**)
+        ExtractArchive[
+            URL["https://github.com/huacnlee/autocorrect/releases/latest/download/autocorrect-darwin-arm64.tar.gz"],
+            $thisLibraryDir,
+            OverwriteTarget->True
+        ];
+        ,
+        (**)
+        If[ !FileExistsQ@FileNameJoin[$thisLibraryDir,"autocorrect"],
+            Message[prepareLibrary::autocorrectfailed]
         ]
     ];
 

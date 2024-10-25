@@ -13,8 +13,6 @@ Needs["Yurie`LaTeXTool`Info`"];
 
 Needs["Yurie`LaTeXTool`Library`"];
 
-ClearAll["`*`*"];
-
 
 (* ::Section:: *)
 (*Public*)
@@ -115,12 +113,12 @@ LaTeXFormat::spacingnotmatch =
 
 LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
     Module[ {library = FileNameJoin[$thisLibraryDir,"tex-fmt"]},
-        If[ !FileExistsQ[file],
+        If[ !FileExistsQ[library],
             Message[LaTeXFormat::libnotexist];
             Throw[file]
         ];
-        If[ !FileExistsQ[library],
-            Message[LaTeXFormat::notexist];
+        If[ !FileExistsQ[file],
+            Message[LaTeXFormat::filenotexist];
             Throw[file]
         ];
         If[ !MatchQ[OptionValue["EquationMarkSpacing"],$markSpacingP|None],
@@ -128,9 +126,9 @@ LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
             Throw[file]
         ];
         LaTeXFormatByLibrary[library,OptionValue["Indentation"]][file];
-        Import[file,"String"]//
+        Import[file,"Text"]//
             LaTeXFormatKernel[FilterRules[{opts,Options@LaTeXFormat},Options@LaTeXFormatKernel]]//
-                Export[file,#,"String"]&//File
+                Export[file,#,"Text"]&//File
     ]//Catch;
 
 
