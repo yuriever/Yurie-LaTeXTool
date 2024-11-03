@@ -55,14 +55,23 @@ $ENmarks =
 $CNmarks =
     "\:ff0c\:3002\:ff1f\:ff01\:ff1b\:ff1a\:3001";
 
+$marks =
+    $ENmarks~~$CNmarks;
+
 $inlineEquationWithRightMarkP =
-    RegularExpression["(\$[^\$]*?\$) (["<>$ENmarks<>$CNmarks<>"])"];
+    RegularExpression["(\$[^\$]*?\$) (["<>$marks<>"])"];
 
 $inlineEquationWithLeftMarkP =
     RegularExpression["(["<>$CNmarks<>"]) (\$[^\$]*?\$)"];
 
 $inlineEquationWithLeftRightMarkP =
-    RegularExpression["(["<>$CNmarks<>"]) (\$[^\$]*?\$) (["<>$ENmarks<>$CNmarks<>"])"];
+    RegularExpression["(["<>$CNmarks<>"]) (\$[^\$]*?\$) (["<>$marks<>"])"];
+
+$adjacentInlineEquationP =
+    RegularExpression["\$(["<>$marks<>"])\$"];
+
+$adjacentInlineEquationWithCNMarkP =
+    RegularExpression["\$(["<>$CNmarks<>"]) \$"];
 
 
 (* ::Subsection:: *)
@@ -155,7 +164,15 @@ robustPath[path_] :=
 
 
 surroundInlineEquationWithBlank[True][string_String] :=
-    string//addBlankAroundInlineEquation;
+    (*handle each paragraph separately.*)
+    string//StringSplit[#,"\n\n"]&//
+        Map[
+            If[ StringContainsQ[#,"$"],
+                #//addBlankAroundInlineEquation//trimInlineEquation,
+                (*Else*)
+                #
+            ]&
+        ]//StringRiffle[#,"\n\n"]&;
 
 surroundInlineEquationWithBlank[False][string_String] :=
     string;
@@ -163,22 +180,38 @@ surroundInlineEquationWithBlank[False][string_String] :=
 
 addBlankAroundInlineEquation[string_] :=
     string//StringReplace[{
-        (*surround the inline equations with blanks.*)
+        (*deal with adjacent inline equations.*)
+        $adjacentInlineEquationP:>"\$$1 \$"
+    }]//StringReplace[{
         (*dummy rule to skip the magic-commented equations.*)
         magic:("<!-- MarkdownFormat-IEB-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-IEB-Off -->"):>
             magic,
+        (*surround the inline equations with blanks.*)
         RegularExpression[" (\$[^\$]*?\$) "]:>" $1$2 ",
         RegularExpression["([^ ])(\$[^\$]*?\$)([^ ])"]:>"$1 $2 $3",
         RegularExpression["([^ ])(\$[^\$]*?\$) "]:>"$1 $2 ",
         RegularExpression[" (\$[^\$]*?\$)([^ ])"]:>" $1 $2"
     }]//StringReplace[{
-	    (*delete the blanks between inline equations and marks.*)
         (*dummy rule to skip the magic-commented equations.*)
         magic:("<!-- MarkdownFormat-IEB-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-IEB-Off -->"):>
             magic,
+        (*delete the blanks between inline equations and marks.*)
         $inlineEquationWithLeftRightMarkP:>"$1$2$3",
         $inlineEquationWithRightMarkP:>"$1$2",
         $inlineEquationWithLeftMarkP:>"$1$2"
+    }]//StringReplace[{
+        (*deal with adjacent inline equations.*)
+        $adjacentInlineEquationWithCNMarkP:>"\$$1\$"
+    }];
+
+
+trimInlineEquation[string_] :=
+    string//StringReplace[{
+        (*dummy rule to skip the magic-commented equations.*)
+        magic:("<!-- MarkdownFormat-IEB-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-IEB-Off -->"):>
+            magic,
+        (*surround the inline equations with blanks.*)
+        RegularExpression["\$([^\$]*?)\$"]:>"\$"<>StringTrim["$1"]<>"\$"
     }];
 
 
