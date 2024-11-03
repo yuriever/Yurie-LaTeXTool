@@ -11,6 +11,8 @@ Needs["Yurie`LaTeXTool`"];
 
 Needs["Yurie`LaTeXTool`Info`"];
 
+Needs["Yurie`LaTeXTool`LaTeXFormat`"];
+
 
 (* ::Section:: *)
 (*Public*)
@@ -40,11 +42,24 @@ Begin["`Private`"];
 $emptyLineLimit = 5;
 
 
-$equationList =
+$blockEquationList =
     {"equation","align","gather","alignat","multline"};
 
-$equationP =
-    $equationList//Map[{"{"<>#<>"}","{"<>#<>"*}"}&]//Flatten//Apply[Alternatives];
+$blockEquationP =
+    $blockEquationList//Map[{"{"<>#<>"}","{"<>#<>"*}"}&]//Flatten//Apply[Alternatives];
+
+
+$marks =
+    ",.?!;:\-\:ff0c\:3002\:ff1f\:ff01\:ff1b\:ff1a\:3001";
+
+$inlineEquationWithRightMarkP =
+    RegularExpression["(\$[^\$]*?\$) (["<>$marks<>"])"];
+
+$inlineEquationWithLeftMarkP =
+    RegularExpression["(["<>$marks<>"]) (\$[^\$]*?\$)"];
+
+$inlineEquationWithLeftRightMarkP =
+    RegularExpression["(["<>$marks<>"]) (\$[^\$]*?\$) (["<>$marks<>"])"];
 
 
 (* ::Subsection:: *)
@@ -53,7 +68,8 @@ $equationP =
 
 MarkdownFormatKernel//Options = {
     "SurroundInlineEquationWithBlank"->True,
-    "SurroundBlockEquationWithEmptyLine"->True
+    "SurroundBlockEquationWithEmptyLine"->True,
+    "BlockEquationMarkSpacing"->None
 };
 
 
@@ -72,6 +88,9 @@ MarkdownFormat::filenotexist =
 MarkdownFormat::libnotexist =
     "the library autocorrect does not exist.";
 
+MarkdownFormat::notmd =
+    "the file is not Markdown."
+
 
 (* ::Subsection:: *)
 (*Main*)
@@ -87,6 +106,10 @@ MarkdownFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
             Message[MarkdownFormat::filenotexist];
             Throw[file]
         ];
+        If[ FileExtension[file]=!="md",
+            Message[MarkdownFormat::notmd];
+            Throw[file]
+        ];
         MarkdownFormatByLibrary[library][file];
         Import[file,"Text"]//
             MarkdownFormatKernel[FilterRules[{opts,Options@MarkdownFormat},Options@MarkdownFormatKernel]]//
@@ -96,7 +119,8 @@ MarkdownFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
 
 MarkdownFormatKernel[OptionsPattern[]][string_] :=
     string//surroundInlineEquationWithBlank[OptionValue["SurroundInlineEquationWithBlank"]]//
-        surroundBlockEquationWithEmptyLine[OptionValue["SurroundBlockEquationWithEmptyLine"]];
+        surroundBlockEquationWithEmptyLine[OptionValue["SurroundBlockEquationWithEmptyLine"]]//
+            adjustEquationMarkSpacing[OptionValue["BlockEquationMarkSpacing"]];
 
 
 (* ::Subsection:: *)
@@ -136,6 +160,7 @@ surroundInlineEquationWithBlank[False][string_String] :=
 
 addBlankAroundInlineEquation[string_] :=
     string//StringReplace[{
+        (*surround the inline equations with blanks.*)
         (*dummy rule to skip the magic-commented equations.*)
         magic:("<!-- MarkdownFormat-IEB-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-IEB-Off -->"):>
             magic,
@@ -144,11 +169,13 @@ addBlankAroundInlineEquation[string_] :=
         RegularExpression["([^ ])(\$[^\$]*?\$) "]:>"$1 $2 ",
         RegularExpression[" (\$[^\$]*?\$)([^ ])"]:>" $1 $2"
     }]//StringReplace[{
+	    (*delete the blanks between inline equations and marks.*)
         (*dummy rule to skip the magic-commented equations.*)
         magic:("<!-- MarkdownFormat-IEB-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-IEB-Off -->"):>
             magic,
-        RegularExpression["(\$[^\$]*?\$) ([,.?!;:\:ff0c\:3002\:ff1f\:ff01\:ff1b\:ff1a\:3001])"]:>"$1$2",
-        RegularExpression["([,.?!;:\:ff0c\:3002\:ff1f\:ff01\:ff1b\:ff1a\:3001]) (\$[^\$]*?\$)"]:>"$1$2"
+        $inlineEquationWithLeftRightMarkP:>"$1$2$3",
+        $inlineEquationWithRightMarkP:>"$1$2",
+        $inlineEquationWithLeftMarkP:>"$1$2"
     }];
 
 
@@ -170,17 +197,17 @@ deleteAllEmptyLineAroundBlockEquation[string_String] :=
 deleteSingleEmptyLineAroundBlockEquation[string_String] :=
     string//StringReplace[{
         (*delete empty line before equations.*)
-        StartOfLine~~"\n"~~Shortest[spaces:WhitespaceCharacter...]~~"\\begin"~~env:$equationP~~Shortest[body___]~~"\\end"~~env__:>
+        StartOfLine~~"\n"~~Shortest[spaces:WhitespaceCharacter...]~~"\\begin"~~env:$blockEquationP~~Shortest[body___]~~"\\end"~~env__:>
             spaces~~"\\begin"~~env~~body~~"\\end"~~env,
         (*delete percent after equations.*)
-        "\\begin"~~env:$equationP~~Shortest[body___]~~"\\end"~~env__~~"\n"~~EndOfLine:>
+        "\\begin"~~env:$blockEquationP~~Shortest[body___]~~"\\end"~~env__~~"\n"~~EndOfLine:>
             "\\begin"~~env~~body~~"\\end"~~env
     }];
 
 
 addEmptyLineAroundBlockEquation[string_String] :=
     string//StringReplace[{
-        StartOfLine~~Shortest[spaces:Except["\n",WhitespaceCharacter]...]~~"\\begin"~~env:$equationP~~Shortest[body___]~~"\\end"~~env__:>
+        StartOfLine~~Shortest[spaces:Except["\n",WhitespaceCharacter]...]~~"\\begin"~~env:$blockEquationP~~Shortest[body___]~~"\\end"~~env__:>
             "\n"~~spaces~~"\\begin"~~env~~body~~"\\end"~~env~~"\n"
     }];
 

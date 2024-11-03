@@ -20,6 +20,9 @@ LaTeXFormat::usage =
     "format the LaTeX file.";
 
 
+adjustEquationMarkSpacing;
+
+
 (* ::Section:: *)
 (*Private*)
 
@@ -80,7 +83,7 @@ $hintAfterMarkP =
 
 
 LaTeXFormatKernel//Options = {
-    "SurroundEquationWithPercent"->True,
+    "SurroundEquationWithPercent"->False,
     "EquationMarkSpacing"->None
 };
 
@@ -104,6 +107,9 @@ LaTeXFormat::libnotexist =
 LaTeXFormat::spacingnotmatch =
     "the option EquationMarkSpacing only accepts `` or None.";
 
+LaTeXFormat::nottex =
+    "the file is not TeX."
+
 
 (* ::Subsection:: *)
 (*Main*)
@@ -117,6 +123,10 @@ LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
         ];
         If[ !FileExistsQ[file],
             Message[LaTeXFormat::filenotexist];
+            Throw[file]
+        ];
+        If[ FileExtension[file]=!="tex",
+            Message[LaTeXFormat::nottex];
             Throw[file]
         ];
         If[ !MatchQ[OptionValue["EquationMarkSpacing"],$markSpacingP|None],
