@@ -1,6 +1,9 @@
 # Test
 
-测试$a$测试 $a$测试$a$ 测试 $a$ 测试测试$a$，测试 $a$，测试$a$ ，测试 $a$ ，测试，$a$测试
+测试$a$测试 $a$测试$a$ 测试 $a$ 测试
+测试$a$，测试 $a$，测试$a$ ，测试 $a$ ，测试，$a$测试，$a$，测试
+test,$a$.$b$testtest,$a$。$b$test
+test, $ a+b $, test$ a + b $
 
 magic-commented equation
 <!-- MarkdownFormat-IEB-Off -->
@@ -38,3 +41,14 @@ magic-commented equation
     在已知基态波函数的时候容易验证这是成立的。有兴趣的同学可以尝试如何建立类似的估计，或者直接构造一个好的测试波函数，进而得到$E_{0}$的上界。
 
 * 素进整数定义为素进绝对值小于等于 $1$ 的素进数，$\Zp\eqqq\set{x\in \Qp : |x|_p\leq 1}$。素进单位元定义为素进绝对值等于 $1$ 的素进数，$\Up\eqqq\set{x\in \Qp : |x|_p= 1}$。
+
+\begin{equation}
+    \bra{p_1}{DP-PD}\ket{p_2}=\alpha\bra{p_1}{P}\ket{p_2}
+\end{equation}
+
+
+\begin{equation}
+    \implies\quad (p_2-p_1)f(p_1,p_2)=\alpha\frac{p_1+p_2}{2}\d(p_1-p_2)
+\end{equation}
+
+test

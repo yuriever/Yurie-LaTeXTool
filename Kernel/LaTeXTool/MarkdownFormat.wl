@@ -164,15 +164,7 @@ robustPath[path_] :=
 
 
 surroundInlineEquationWithBlank[True][string_String] :=
-    (*handle each paragraph separately.*)
-    string//StringSplit[#,"\n\n"]&//
-        Map[
-            If[ StringContainsQ[#,"$"],
-                #//addBlankAroundInlineEquation//trimInlineEquation,
-                (*Else*)
-                #
-            ]&
-        ]//StringRiffle[#,"\n\n"]&;
+    string//addBlankAroundInlineEquation//trimInlineEquation;
 
 surroundInlineEquationWithBlank[False][string_String] :=
     string;
