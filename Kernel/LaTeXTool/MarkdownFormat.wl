@@ -49,17 +49,20 @@ $blockEquationP =
     $blockEquationList//Map[{"{"<>#<>"}","{"<>#<>"*}"}&]//Flatten//Apply[Alternatives];
 
 
-$marks =
-    ",.?!;:\-\:ff0c\:3002\:ff1f\:ff01\:ff1b\:ff1a\:3001";
+$ENmarks =
+    ",.?!;:\-";
+
+$CNmarks =
+    "\:ff0c\:3002\:ff1f\:ff01\:ff1b\:ff1a\:3001";
 
 $inlineEquationWithRightMarkP =
-    RegularExpression["(\$[^\$]*?\$) (["<>$marks<>"])"];
+    RegularExpression["(\$[^\$]*?\$) (["<>$ENmarks<>$CNmarks<>"])"];
 
 $inlineEquationWithLeftMarkP =
-    RegularExpression["(["<>$marks<>"]) (\$[^\$]*?\$)"];
+    RegularExpression["(["<>$CNmarks<>"]) (\$[^\$]*?\$)"];
 
 $inlineEquationWithLeftRightMarkP =
-    RegularExpression["(["<>$marks<>"]) (\$[^\$]*?\$) (["<>$marks<>"])"];
+    RegularExpression["(["<>$CNmarks<>"]) (\$[^\$]*?\$) (["<>$ENmarks<>$CNmarks<>"])"];
 
 
 (* ::Subsection:: *)
