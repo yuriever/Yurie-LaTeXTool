@@ -20,7 +20,7 @@ LaTeXFormat::usage =
     "format the LaTeX file.";
 
 
-adjustEquationMarkSpacing;
+adjustMarkSpacingInEquation;
 
 
 (* ::Section:: *)

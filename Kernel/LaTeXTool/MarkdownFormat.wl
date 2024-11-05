@@ -80,8 +80,8 @@ $adjacentInlineEquationWithCNMarkP =
 
 MarkdownFormatKernel//Options = {
     "SurroundInlineEquationWithBlank"->True,
-    "SurroundBlockEquationWithEmptyLine"->True,
-    "BlockEquationMarkSpacing"->None
+    "SurroundEquationWithEmptyLine"->True,
+    "EquationMarkSpacing"->None
 };
 
 
@@ -131,8 +131,8 @@ MarkdownFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
 
 MarkdownFormatKernel[OptionsPattern[]][string_] :=
     string//surroundInlineEquationWithBlank[OptionValue["SurroundInlineEquationWithBlank"]]//
-        surroundBlockEquationWithEmptyLine[OptionValue["SurroundBlockEquationWithEmptyLine"]]//
-            adjustEquationMarkSpacing[OptionValue["BlockEquationMarkSpacing"]];
+        surroundBlockEquationWithEmptyLine[OptionValue["SurroundEquationWithEmptyLine"]]//
+            adjustEquationMarkSpacing[OptionValue["EquationMarkSpacing"]];
 
 
 (* ::Subsection:: *)
@@ -237,6 +237,21 @@ addEmptyLineAroundBlockEquation[string_String] :=
     string//StringReplace[{
         StartOfLine~~Shortest[spaces:Except["\n",WhitespaceCharacter]...]~~"\\begin"~~env:$blockEquationP~~Shortest[body___]~~"\\end"~~env__:>
             "\n"~~spaces~~"\\begin"~~env~~body~~"\\end"~~env~~"\n"
+    }];
+
+
+(* ::Subsubsection:: *)
+(*Spacing before equation mark*)
+
+
+adjustEquationMarkSpacing[spacing_][string_String] :=
+    string//StringReplace[{
+        (*dummy rule to skip the magic-commented equations.*)
+        magic:("<!-- MarkdownFormat-EMS-Off -->"~~Shortest[___]~~"<!-- MarkdownFormat-EMS-On -->"):>
+            magic,
+        (*find and replace equations.*)
+        "\\begin"~~env:$blockEquationP~~Shortest[body___]~~"\\end"~~env__:>
+            "\\begin"~~env~~adjustMarkSpacingInEquation[spacing][body]~~"\\end"~~env
     }];
 
 
