@@ -1,3 +1,2 @@
 {"LaTeXParser" -> {{"SkipType", "TrimDefinition", "TrimOption"}}, 
- "LaTeXFormat" -> {{"Indentation", "SurroundEquationWithPercent", 
-    "EquationMarkSpacing"}}}
+ "LaTeXFormat" -> {{"SurroundEquationWithPercent", "EquationMarkSpacing"}}}

@@ -88,10 +88,8 @@ LaTeXFormatKernel//Options = {
 };
 
 
-LaTeXFormat//Options = {
-    "Indentation"->4,
-    Splice@Options@LaTeXFormatKernel
-}
+LaTeXFormat//Options = 
+    Options@LaTeXFormatKernel;
 
 
 (* ::Subsection:: *)
@@ -133,7 +131,7 @@ LaTeXFormat[opts:OptionsPattern[]][file:_String|_File]/;FileExistsQ[file] :=
             Message[LaTeXFormat::spacingnotmatch,StringRiffle[$markSpacingList,", "]];
             Throw[file]
         ];
-        LaTeXFormatByLibrary[library,OptionValue["Indentation"]][file];
+        LaTeXFormatByLibrary[library][file];
         Import[file,"Text"]//
             LaTeXFormatKernel[FilterRules[{opts,Options@LaTeXFormat},Options@LaTeXFormatKernel]]//
                 Export[file,#,"Text"]&//File
@@ -153,14 +151,13 @@ LaTeXFormatKernel[OptionsPattern[]][string_] :=
 (*Format by tex-fmt*)
 
 
-LaTeXFormatByLibrary[library_,tabsize_Integer][file_] :=
+LaTeXFormatByLibrary[library_][file_] :=
     ExternalEvaluate[
         "Shell",
         <|
-            "Command"->"`texfmtpath` --keep --tab `tabsize` `file`",
+            "Command"->"`texfmtpath` --keep --tab 4 `file`",
             "TemplateArguments"-><|
                 "texfmtpath"->robustPath[library],
-                "tabsize"->tabsize,
                 "file"->robustPath[file]
         |>
     |>];
