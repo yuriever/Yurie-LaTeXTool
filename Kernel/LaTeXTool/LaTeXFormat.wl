@@ -155,7 +155,7 @@ LaTeXFormatByLibrary[library_][file_] :=
     ExternalEvaluate[
         "Shell",
         <|
-            "Command"->"`texfmtpath` --keep --tab 4 `file`",
+            "Command"->"`texfmtpath` --nowrap --tabsize 4 `file`",
             "TemplateArguments"-><|
                 "texfmtpath"->robustPath[library],
                 "file"->robustPath[file]
