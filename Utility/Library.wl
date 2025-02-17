@@ -7,7 +7,7 @@
 BeginPackage["Yurie`LaTeXTool`Library`"];
 
 
-Needs["Yurie`LaTeXTool`Info`"];
+Needs["Yurie`LaTeXTool`Info`"]//Quiet;
 
 
 (* ::Section:: *)

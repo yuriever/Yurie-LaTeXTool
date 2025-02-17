@@ -9,7 +9,7 @@ BeginPackage["Yurie`LaTeXTool`MarkdownFormat`"];
 
 Needs["Yurie`LaTeXTool`"];
 
-Needs["Yurie`LaTeXTool`Info`"];
+Needs["Yurie`LaTeXTool`Info`"]//Quiet;
 
 Needs["Yurie`LaTeXTool`LaTeXFormat`"];
 

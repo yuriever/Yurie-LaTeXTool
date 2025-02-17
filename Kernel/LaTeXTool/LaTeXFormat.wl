@@ -9,7 +9,7 @@ BeginPackage["Yurie`LaTeXTool`LaTeXFormat`"];
 
 Needs["Yurie`LaTeXTool`"];
 
-Needs["Yurie`LaTeXTool`Info`"];
+Needs["Yurie`LaTeXTool`Info`"]//Quiet;
 
 
 (* ::Section:: *)
